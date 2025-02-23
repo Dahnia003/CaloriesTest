@@ -5,6 +5,20 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
+/**
+ *Dahnia Belizaire
+ *CEN 3024C- Software Developement 1
+ * February 23, 2025
+ * Name: ExerciseLogScreen
+ * This class represents an exercise logging system where users can:
+ * 1. Add exercise entries manually or from a file.
+ * 2. Remove or update an exercise entry.
+ * 3. Display all exercise entries.
+ * 4. Navigate to a progress screen or stay on the exercise screen.
+ *  The objective of this program is to track user exercises and manage the exercise log.
+ */
+
+
 
 public class ExerciseLogScreen {
 
@@ -20,6 +34,12 @@ public class ExerciseLogScreen {
         exerciseLogScreen.run2();
     }
 
+    /**
+     * Name: run2
+     * Purpose:Display menu with different options
+     * Arguments:None
+     * return value: void
+     */
     public void run2() {
         Scanner scanner = new Scanner(System.in);
 
@@ -75,11 +95,23 @@ public class ExerciseLogScreen {
             }
         }
     }
+    /**
+     * Name: goToProgressScreen
+     * Purpose:Allow user to navigate to progress screen
+     * Arguments:None
+     * return value: void
+     */
 
 private void goToProgressScreen() {
     ProgressScreen progressScreen = new ProgressScreen();
     progressScreen.displayProgress();
 }
+    /**
+     * Name: userChoice
+     * Purpose:Ask user how they want to proceed after fod entry manipulation
+     * Arguments:None
+     * return value: void
+     */
 
     private void userChoice() {
         Scanner scanner = new Scanner(System.in);
@@ -107,6 +139,12 @@ private void goToProgressScreen() {
             }
         }
     }
+    /**
+     * Name: addExerciseManually
+     * Purpose:Add an exercise entry manually
+     * Arguments:Scanner scanner
+     * return value: exerciseEntry
+     */
 
     public ExerciseEntry addExerciseManually(Scanner scanner) {
 
