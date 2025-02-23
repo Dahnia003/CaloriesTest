@@ -1,23 +1,18 @@
 import java.io.*;
+import java.util.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+
 
 public class ExerciseLogScreen {
 
-    public List<ExerciseEntry> exerciseList;  // List to store exercise entries
+    private final List<ExerciseEntry> exerciseList= new ArrayList<>();  // List to store exercise entries
 
-    public ExerciseLogScreen() {
-        // Initialize the exercise list to hold exercise entries
-        exerciseList = new ArrayList<>();
-    }
-
+    //Method to get exercise entries from ProgressScreen
     public List<ExerciseEntry> getExerciseEntries() {
-        return this.exerciseList;
+        return exerciseList;
     }
 
     public static void main(String[] args) {
@@ -38,28 +33,38 @@ public class ExerciseLogScreen {
             System.out.println("6. Exit");
             System.out.print("Please select an option: ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();  // Consume newline character after choice
+            int choice = -1;
+            if (scanner.hasNextInt()) {
+                choice = scanner.nextInt();
+                scanner.nextLine();  // Consume newline character after choice
+            } else {
+                System.out.println("Invalid input. Please enter a number between 1 and 6.");
+                scanner.nextLine();  // Clear the invalid input
+                continue;  // Skip to the next iteration to prompt again
+            }
 
             switch (choice) {
                 case 1:
-                    enterExerciseManually(scanner);
-                    goToHomeScreen();
+                    addExerciseManually(scanner);
+                    userChoice();
 
                     break;
                 case 2:
                     addExerciseFromFile(scanner);
-                    goToHomeScreen();
+                  userChoice();
 
                     break;
                 case 3:
                     removeExerciseEntry(scanner);
+                    userChoice();
                     break;
                 case 4:
                     updateExerciseEntry(scanner);
+                    userChoice();
                     break;
                 case 5:
                     displayExerciseLog();
+                    userChoice();
                     break;
                 case 6:
                     System.out.println("Exiting system. Goodbye!");
@@ -71,12 +76,42 @@ public class ExerciseLogScreen {
         }
     }
 
-private void goToHomeScreen() {
+private void goToProgressScreen() {
     ProgressScreen progressScreen = new ProgressScreen();
     progressScreen.displayProgress();
 }
-    public ExerciseEntry enterExerciseManually(Scanner scanner) {
 
+    private void userChoice() {
+        Scanner scanner = new Scanner(System.in);
+
+        while (true) {  // Loop until a valid input is provided
+
+            System.out.println("1-Stay on Exercise Screen or 2-Navigate to Progress Screen?");
+
+            int choice = -1;
+            try {
+                choice = Integer.parseInt(scanner.nextLine().trim());  // Try to parse input to an integer
+            } catch (NumberFormatException e) {
+                System.out.println("Invalid input. Please enter 1 or 2.");
+                continue;  // If input is invalid, ask again
+            }
+
+            if (choice == 1) {
+                // Stay on the exercise screen (no action needed)
+                break;  // Exit loop as the user made a valid choice
+            } else if (choice == 2) {
+                goToProgressScreen();  // Navigate to Progress Screen
+                break;  // Exit loop after navigating
+            } else {
+                System.out.println("Invalid option. Please try again.");  // If the input is neither 1 nor 2
+            }
+        }
+    }
+
+    public ExerciseEntry addExerciseManually(Scanner scanner) {
+
+        System.out.print("Enter Exercise ID (e.g., E0000000): ");
+        String exerciseID = getValidExerciseID(scanner);
 
         System.out.print("Enter Exercise Name: ");
         String exerciseName = scanner.nextLine().trim();
@@ -85,9 +120,6 @@ private void goToHomeScreen() {
             System.out.println("Exercise name cannot be empty.");
             return null;
         }
-
-        System.out.print("Enter Exercise ID (e.g., E0000000): ");
-        String exerciseID = getValidExerciseID(scanner);
 
         System.out.print("Enter Exercise Type: ");
         String exerciseType = scanner.nextLine().trim();
@@ -104,15 +136,21 @@ private void goToHomeScreen() {
         float calBurned = calculateCaloriesBurned(duration, intensity);
 
         ExerciseEntry exerciseEntry = new ExerciseEntry(exerciseName, exerciseID, exerciseType,
-                duration, intensity, exerciseDate,
-                exerciseTime, calBurned);
+                                     duration, intensity, exerciseDate, exerciseTime, calBurned);
+        exerciseList.add(exerciseEntry);
+        System.out.println("Exercise Added Successfully.");
         return exerciseEntry;
+
     }
 
     private String getValidExerciseID(Scanner scanner) {
         String exerciseID;
         while (true) {
             exerciseID = scanner.nextLine().trim();
+            if (exerciseID.isEmpty()) {
+                System.out.println("Exercise ID cannot be empty.");
+                continue;
+            }
             if (exerciseID.matches("^E\\d{7}$")) {
                 return exerciseID;
             } else {
@@ -125,7 +163,10 @@ private void goToHomeScreen() {
         while (true) {
             System.out.print(prompt);
             String input = scanner.nextLine();
-
+            if (input.isEmpty()) {
+                System.out.println("Field cannot be empty: ");
+                continue;
+            }
             try {
                 return Integer.parseInt(input);
             } catch (NumberFormatException e) {
@@ -140,7 +181,10 @@ private void goToHomeScreen() {
         while (true) {
             System.out.print("Enter exercise intensity (Low, Medium, High, Mixed): ");
             intensity = scanner.nextLine().trim();
-
+            if (intensity.isEmpty()) {
+                System.out.println("Meal type cannot be empty.");
+                continue;
+            }
             if (validIntensities.contains(intensity)) {
                 return intensity;
             } else {
@@ -210,7 +254,6 @@ private void goToHomeScreen() {
         System.out.println("Error: Invalid Exercise ID format! It must follow the format E0000000.");
         return false;  // Invalid format
     }
-
     // Check if the exercise ID already exists in the list
     for (ExerciseEntry exercise : exerciseList) {
         if (exercise.getExerciseID().equalsIgnoreCase(exerciseID)) {
@@ -218,119 +261,84 @@ private void goToHomeScreen() {
             return false;  // ID already exists in the list
         }
     }
-
     // ID is valid and does not already exist
     return true;
 }
 
-    private boolean isValidInt(Scanner scanner, String prompt) {
-        while (true) {
-            System.out.print(prompt);
-            String input = scanner.nextLine();
-
-            try {
-                int duration = Integer.parseInt(input);
-                if (duration > 0) {  // You can set a lower bound if needed, like `duration > 0`
-                    return true;
-                } else {
-                    System.out.println("Duration must be a positive number.");
-                }
-            } catch (NumberFormatException e) {
-                System.out.println("Invalid input! Please enter a valid number.");
-            }
-        }
-    }
-    private boolean isValidIntensity(Scanner scanner) {
-        List<String> validIntensities = List.of("Low", "Medium", "High", "Mixed");
-        while (true) {
-            System.out.print("Enter exercise intensity (Low, Medium, High, Mixed): ");
-            String intensity = scanner.nextLine().trim();
-
-            if (validIntensities.contains(intensity)) {
-                return true;  // Valid intensity
-            } else {
-                System.out.println("Invalid intensity. Please enter Low, Medium, High, or Mixed.");
-            }
-        }
-    }
-    private boolean isValidDate(Scanner scanner) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-        while (true) {
-            System.out.print("Enter the date (MM/dd/yyyy): ");
-            String dateString = scanner.nextLine().trim();
-
-            if (dateString.isEmpty()) {
-                System.out.println("Date cannot be empty.");
-                continue;
-            }
-
-            try {
-                LocalDate date = LocalDate.parse(dateString, formatter);
-                return true;  // Valid date
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid date format. Please enter a valid date in MM/dd/yyyy format.");
-            }
-        }
+    private boolean isValidInt(int duration) {
+        return duration > 0;  // Duration must be positive
     }
 
-    private boolean isValidTime(Scanner scanner) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
-        while (true) {
-            System.out.print("Enter the time (hh:mm a): ");
-            String timeString = scanner.nextLine().trim();
-
-            if (timeString.isEmpty()) {
-                System.out.println("Time cannot be empty.");
-                continue;
-            }
-
-            try {
-                LocalTime time = LocalTime.parse(timeString, formatter);
-                return true;  // Valid time
-            } catch (DateTimeParseException e) {
-                System.out.println("Invalid time format. Please enter a valid time in hh:mm a format.");
-            }
-        }
+private boolean isValidIntensity(String intensity) {
+    List<String> validIntensities = List.of("Low", "Medium", "High", "Mixed");
+    return validIntensities.contains(intensity);  // Check if intensity is valid
+}
+private boolean isValidDate(String dateString) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+    try {
+        LocalDate date = LocalDate.parse(dateString, formatter);
+        return true;  // Valid date
+    } catch (DateTimeParseException e) {
+        System.out.println("Invalid date format: " + dateString);
+        return false;
     }
+}
+
+private boolean isValidTime(String timeString) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+    try {
+        LocalTime time = LocalTime.parse(timeString, formatter);
+        return true;  // Valid time
+    } catch (DateTimeParseException e) {
+        System.out.println("Invalid time format: " + timeString);
+        return false;
+    }
+}
 
    public void addExerciseFromFile(Scanner scanner) {
         System.out.print("Enter the file name to load exercises: ");
         String fileName = scanner.nextLine();
 
-        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
+
+
+       try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
             String line;
             while ((line = br.readLine()) != null) {
                 if (line.trim().isEmpty()) {
                     continue; // Skip empty lines
                 }
                 String[] data = line.split("-");
-                if (data.length == 6) {
+                if (data.length == 7) {
                     String exerciseID = data[0].trim();
                     String type = data[1].trim();
                     String name = data[2].trim();
                     int duration = Integer.parseInt(data[3]. trim());
                     String intensity = data [4].trim();
-                    LocalDate date = LocalDate.parse(data [5]. trim());
-                    LocalTime time = LocalTime.parse(data [6]. trim());
+
+                    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+                    LocalDate date = LocalDate.parse(data [5]. trim(), dateFormatter);
+
+                    DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("hh:mm a");
+                    LocalTime time = LocalTime.parse(data[6].trim(), timeFormatter);
 
                     // Validate and process the duration
                     if (!isValidExerciseID(exerciseID)) {
                         continue;  // Skip this entry if the ID is invalid or already exists
                     }
-                    if (!isValidIntensity(scanner)) {
+                    if (!isValidIntensity(intensity)) {
                         System.out.println("Skipping invalid intensity: " + intensity);
                         continue;  // Skip this entry if the intensity is invalid
                     }
-                    if (!isValidTime(scanner)) {
+                    if (!isValidTime(data[6].trim())) {
                         System.out.println("Skipping invalid time: " + time);
                         continue;  // Skip this entry if the time is invalid
                     }
-                    if (!isValidDate(scanner)) {
+                    if (!isValidDate(data[5].trim())) {
                         System.out.println("Skipping invalid date: " + date);
                         continue;  // Skip this entry if the date is invalid
                     }
 
-                    if (!isValidInt(scanner, "Enter valid duration (minutes): ")) {
+                    if (!isValidInt(duration)) {
                         continue;  // Skip this entry if the duration is invalid
                     }
 
@@ -340,41 +348,63 @@ private void goToHomeScreen() {
                     // Create and add ExerciseEntry to the list
                     ExerciseEntry exerciseEntry = new ExerciseEntry(name, exerciseID, type, duration, intensity, date, time, calBurned);
                     exerciseList.add(exerciseEntry);
+
+
                 } else {
 
                     System.out.println("Skipping invalid line (incorrect number of fields): " + line);
 
                 }
-            }
+            } displayExerciseLog();
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
     }
 //--------------------------------------------------------------
     //-----------------------------------------------------------
-    public boolean removeExerciseEntry(Scanner scanner) {
-        System.out.print("Enter the Exercise ID to remove: ");
-        String exerciseID = scanner.nextLine().trim();
+public boolean removeExerciseEntry(Scanner scanner) {
+    System.out.print("Enter the Exercise ID to remove: ");
+    String exerciseID = scanner.nextLine().trim();  // Ensure there's no leading/trailing whitespace
 
-        boolean removed = exerciseList.removeIf(exercise -> exercise.getExerciseID().equalsIgnoreCase(exerciseID));
+    // Create an iterator for the exercise list
+    Iterator<ExerciseEntry> iterator = exerciseList.iterator();
+    boolean removed = false;
 
-        if (removed) {
+    // Iterate over the list
+    while (iterator.hasNext()) {
+        ExerciseEntry exercise = iterator.next();
+
+        // Compare the exercise ID
+        if (exercise.getExerciseID().equals(exerciseID)) {
+            iterator.remove();  // Remove the exercise entry from the list
+            removed = true;
             System.out.println("Exercise entry removed successfully.");
-        } else {
-            System.out.println("Exercise ID not found.");
+            break;  // Exit the loop once the exercise is removed
         }
-        return removed;
     }
+
+    // If no match is found, print an error message
+    if (!removed) {
+        System.out.println("Exercise ID not found.");
+    }
+
+    return removed;
+}
+
 
     private boolean updateExerciseEntry(Scanner scanner) {
         System.out.print("Enter the Exercise ID to update: ");
         String exerciseID = scanner.nextLine().trim();
 
+        Iterator<ExerciseEntry> iterator = exerciseList.iterator();
         ExerciseEntry exerciseToUpdate = null;
-        for (ExerciseEntry exercise : exerciseList) {
+
+        // Iterate over the list to find the exercise entry with the matching ID
+        while (iterator.hasNext()) {
+            ExerciseEntry exercise = iterator.next();
             if (exercise.getExerciseID().equals(exerciseID)) {
                 exerciseToUpdate = exercise;
-                break;
+                break;  // Exit loop once the exercise is found
             }
         }
 
@@ -436,6 +466,8 @@ private void goToHomeScreen() {
         if (isUpdated) {
             System.out.println("Exercise entry updated successfully!");
         }
+        exerciseList.add(exerciseToUpdate);
+        displayExerciseLog();
         return isUpdated;
     }
 
@@ -449,6 +481,9 @@ private void goToHomeScreen() {
             }
         }
     }
+
+
+
 }
 
 

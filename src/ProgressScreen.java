@@ -1,27 +1,31 @@
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 
 public class ProgressScreen {
-    public FoodLogScreen foodLogScreen;
-    public ExerciseLogScreen exerciseLogScreen;
-    public List<FoodEntry> foodList;  // List to store food entries
-    public List<ExerciseEntry> exerciseList;  // List to store exercise entries
+    private final FoodLogScreen foodLogScreen;
+    private final ExerciseLogScreen exerciseLogScreen;
+    private HomeScreen homeScreen;
+    private final List<FoodEntry> foodList;  // List to store food entries
+    private final List<ExerciseEntry> exerciseList;  // List to store exercise entries
 
-    // Constructor to initialize lists
+    // Constructor to initialize lists and load data from FoodLogScreen and ExerciseLogScreen
     public ProgressScreen() {
+        this.foodLogScreen = new FoodLogScreen();  // Initialize with the FoodLogScreen
+        this.exerciseLogScreen = new ExerciseLogScreen();// Initialize with the ExerciseLogScreen
+        this.homeScreen = new HomeScreen();
+
+        // Load the food and exercise entries from respective screens
         this.foodList = foodLogScreen.getFoodEntries();
         this.exerciseList = exerciseLogScreen.getExerciseEntries();
-        this.foodLogScreen = new FoodLogScreen();
-        this.exerciseLogScreen = new ExerciseLogScreen();
+
     }
+
     public static void main(String[] args) {
         ProgressScreen progressScreen = new ProgressScreen();
         progressScreen.displayProgress();
     }
+
     public void displayProgress() {
-        Scanner scanner = new Scanner(System.in);
 
         while (true) {
             // Create a list to store unique dates from both food and exercise logs
@@ -65,7 +69,7 @@ public class ProgressScreen {
                 System.out.print(foodEntries + "\t");
 
                 // Display total calories for the date
-                float totalCalories = getTotalCaloriesForDate(date);
+                float totalCalories = calculateCaloriesIntakeByDate(date);
                 System.out.print(totalCalories + "\t\t");
 
                 // Display exercise entries for the date
@@ -81,10 +85,20 @@ public class ProgressScreen {
                 System.out.print(exerciseEntries + "\t");
 
                 // Display total calories burned for the date
-                float totalCaloriesBurned = getTotalCaloriesBurnedForDate(date);
+                float totalCaloriesBurned = calculateCaloriesBurnedByDate(date);
                 System.out.println(totalCaloriesBurned);
             }
 
+            // Call displayChoice() after showing progress
+            displayChoice();
+        }
+    }
+
+    public void displayChoice() {
+        Scanner scanner = new Scanner(System.in);
+        boolean validInput = false;
+
+        while (!validInput) {
             // Display options for navigation
             System.out.println("\nOptions:");
             System.out.println("1. Go back to Home Screen");
@@ -93,19 +107,25 @@ public class ProgressScreen {
             System.out.println("4. Exit the Program");
             System.out.print("Please select an option (1-4): ");
 
-            int choice = scanner.nextInt();
-            scanner.nextLine();  // Consume the newline character after the choice
+            int choice = -1;
+            if (scanner.hasNextInt()) {
+                choice = scanner.nextInt();
+                scanner.nextLine();  // Consume newline character after choice
+                validInput = true;  // Valid input received
+            } else {
+                System.out.println("Invalid input. Please enter a number between 1 and 4.");
+                scanner.nextLine();  // Clear the invalid input
+            }
 
             switch (choice) {
                 case 1:
-                    HomeScreen homeScreen = new HomeScreen();
                     homeScreen.displayMenu();
                     break;
                 case 2:
-                    foodLogScreen.run();
+                    foodLogScreen.run();  // You should make sure that this method is correctly implemented in FoodLogScreen
                     break;
                 case 3:
-                    exerciseLogScreen.run2();
+                    exerciseLogScreen.run2();  // You should make sure that this method is correctly implemented in ExerciseLogScreen
                     break;
                 case 4:
                     System.out.println("Exiting system. Goodbye!");
@@ -113,11 +133,13 @@ public class ProgressScreen {
                     break;
                 default:
                     System.out.println("Invalid option. Please try again.");
+                    validInput = false;  // Invalid choice, so keep asking
             }
         }
     }
+
     // Method to calculate total calories for a specific date
-    public float getTotalCaloriesForDate(LocalDate date) {
+    public float calculateCaloriesIntakeByDate(LocalDate date) {
         float totalCalories = 0;
         for (FoodEntry food : foodList) {
             if (food.getMealDate().equals(date)) {
@@ -128,7 +150,7 @@ public class ProgressScreen {
     }
 
     // Method to calculate total calories burned for a specific date
-    public float getTotalCaloriesBurnedForDate(LocalDate date) {
+    public float calculateCaloriesBurnedByDate(LocalDate date) {
         float totalCaloriesBurned = 0;
         for (ExerciseEntry exercise : exerciseList) {
             if (exercise.getExerciseDate().equals(date)) {
@@ -137,8 +159,4 @@ public class ProgressScreen {
         }
         return totalCaloriesBurned;
     }
-
-    // Method to retrieve all food entries and exercises by date
-
-
 }

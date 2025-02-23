@@ -19,7 +19,10 @@ public class HomeScreen {
         this.foodList = new ArrayList<>();
         this.exerciseList = new ArrayList<>();
     }
-
+    public static void main(String[] args) {
+        HomeScreen homeScreen = new HomeScreen();
+        homeScreen.displayMenu();
+    }
     public void displayMenu() {
 
         while (true) {
@@ -53,9 +56,6 @@ public class HomeScreen {
 
         }
     }
-    public static void main(String[] args) {
-        HomeScreen homeScreen = new HomeScreen();
-        homeScreen.displayMenu();
-    }
+
 
 }

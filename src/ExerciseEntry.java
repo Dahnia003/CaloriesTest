@@ -3,6 +3,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 
+
 public class ExerciseEntry {
     private String exerciseName;
     private String exerciseID;
@@ -91,17 +92,11 @@ public class ExerciseEntry {
         this.calBurned = calBurned;
     }
 
+
     @Override
     public String toString() {
-        return "ExerciseEntry{" +
-                "exerciseName='" + exerciseName + '\'' +
-                ", exerciseID='" + exerciseID + '\'' +
-                ", exerciseType='" + exerciseType + '\'' +
-                ", duration=" + duration +
-                ", intensity='" + intensity + '\'' +
-                ", exerciseDate=" + exerciseDate +
-                ", exerciseTime=" + exerciseTime +
-                ", calBurned=" + calBurned +
-                '}';
+        return exerciseID + "-" + exerciseName + "-" + exerciseType + "-"
+                + duration + "-" + intensity + "-" + exerciseDate + "-" +
+                exerciseTime + "-" + calBurned;
     }
 }
