@@ -1,5 +1,15 @@
 import java.time.LocalDate;
 import java.util.*;
+/**
+ *Dahnia Belizaire
+ *CEN 3024C- Software Developement 1
+ * February 23, 2025
+ * Name: ProgressScreen
+ * This class represents a progress tracking system where users can:
+ * 1. See total calories intake
+ * 2. See total calories expenditure
+ * 4. Navigate back to other screens
+ */
 
 public class ProgressScreen {
     private final FoodLogScreen foodLogScreen;
@@ -19,11 +29,24 @@ public class ProgressScreen {
         this.exerciseList = exerciseLogScreen.getExerciseEntries();
 
     }
-
+    /**
+     * Method Name: main
+     * Purpose: This is the entry point of the class.
+     *           It initializes `ProgressScreen` object and
+     *           calls the `displayProgress` method to display the options for the user.
+     * Arguments: String[] args
+     * Return Value: void
+     */
     public static void main(String[] args) {
         ProgressScreen progressScreen = new ProgressScreen();
         progressScreen.displayProgress();
     }
+    /**
+     * Name: displayProgress
+     * Purpose:display features of the progress screen
+     * Arguments:none
+     * return value: void
+     */
 
     public void displayProgress() {
 
@@ -93,7 +116,12 @@ public class ProgressScreen {
             displayChoice();
         }
     }
-
+    /**
+     * Name: displayChoice
+     * Purpose: allow users to got other screens
+     * Arguments:none
+     * return value: void
+     */
     public void displayChoice() {
         Scanner scanner = new Scanner(System.in);
         boolean validInput = false;
@@ -137,7 +165,12 @@ public class ProgressScreen {
             }
         }
     }
-
+    /**
+     * Name: calculateCaloriesIntakeByDate
+     * Purpose:calculate calories intake by date retrieve from foodList
+     * Arguments: LocalDate date
+     * return value: float
+     */
     // Method to calculate total calories for a specific date
     public float calculateCaloriesIntakeByDate(LocalDate date) {
         float totalCalories = 0;
@@ -149,7 +182,12 @@ public class ProgressScreen {
         return totalCalories;
     }
 
-    // Method to calculate total calories burned for a specific date
+    /**
+     * Name: calculateCaloriesBurnedByDate
+     * Purpose:calculate calories burned by date retrieve from foodList
+     * Arguments: LocalDate date
+     * return value: float
+     */
     public float calculateCaloriesBurnedByDate(LocalDate date) {
         float totalCaloriesBurned = 0;
         for (ExerciseEntry exercise : exerciseList) {

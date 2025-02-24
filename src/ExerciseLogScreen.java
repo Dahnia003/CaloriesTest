@@ -15,7 +15,7 @@ import java.time.format.DateTimeParseException;
  * 2. Remove or update an exercise entry.
  * 3. Display all exercise entries.
  * 4. Navigate to a progress screen or stay on the exercise screen.
- *  The objective of this program is to track user exercises and manage the exercise log.
+ *  The objective of this class is to track user exercises and manage the exercise log.
  */
 
 
@@ -28,7 +28,14 @@ public class ExerciseLogScreen {
     public List<ExerciseEntry> getExerciseEntries() {
         return exerciseList;
     }
-
+    /**
+     * Method Name: main
+     * Purpose: This is the entry point of the class.
+     *           It initializes `ExerciseLogScreen` object and
+     *           calls the `run2` method to display the options for the user.
+     * Arguments: String[] args
+     * Return Value: void
+     */
     public static void main(String[] args) {
         ExerciseLogScreen exerciseLogScreen = new ExerciseLogScreen();
         exerciseLogScreen.run2();
@@ -36,7 +43,7 @@ public class ExerciseLogScreen {
 
     /**
      * Name: run2
-     * Purpose:Display menu with different options
+     * Purpose:Display exercise menu with different options and proceed accordingly with user choice
      * Arguments:None
      * return value: void
      */
@@ -97,7 +104,7 @@ public class ExerciseLogScreen {
     }
     /**
      * Name: goToProgressScreen
-     * Purpose:Allow user to navigate to progress screen
+     * Purpose:Allow user to stay 0n current screen or navigate to progress screen
      * Arguments:None
      * return value: void
      */
@@ -143,7 +150,7 @@ private void goToProgressScreen() {
      * Name: addExerciseManually
      * Purpose:Add an exercise entry manually
      * Arguments:Scanner scanner
-     * return value: exerciseEntry
+     * return value: List<ExerciseEntry>
      */
 
     public ExerciseEntry addExerciseManually(Scanner scanner) {
@@ -180,6 +187,12 @@ private void goToProgressScreen() {
         return exerciseEntry;
 
     }
+    /**
+     * Name: getValidExerciseID
+     * Purpose:Validate exercise ID in addExerciseManually method
+     * Arguments:Scanner scanner
+     * return value: String
+     */
 
     private String getValidExerciseID(Scanner scanner) {
         String exerciseID;
@@ -189,13 +202,33 @@ private void goToProgressScreen() {
                 System.out.println("Exercise ID cannot be empty.");
                 continue;
             }
-            if (exerciseID.matches("^E\\d{7}$")) {
-                return exerciseID;
-            } else {
-                System.out.println("Invalid Exercise ID! Please enter an ID with the format E0000000.");
+            if (!exerciseID.matches("^E\\d{7}")) {
+                System.out.println("Invalid ID! Please enter an alphanumeric ID with exactly 7 digits (starting with 'E').");
+                continue;
             }
+
+            // Check if the exercise ID already exists in the exerciseList
+            boolean idExists = false;
+            for (ExerciseEntry exercise : exerciseList) {
+                if (exercise.getExerciseID().equals(exerciseID)) {
+                    idExists = true;
+                    break;
+                }
+            }
+
+            if (idExists) {
+                System.out.println("Exercise ID already exists. Please enter a unique Exercise ID.");
+                continue;
+            }
+            return exerciseID;
         }
     }
+    /**
+     * Name: getValidInt
+     * Purpose:Validate duration is int upon entry in addExerciseManually method
+     * Arguments:Scanner scanner, Sting prompt
+     * return value: int
+     */
 
     private int getValidInt(Scanner scanner, String prompt) {
         while (true) {
@@ -212,7 +245,12 @@ private void goToProgressScreen() {
             }
         }
     }
-
+    /**
+     * Name: getValidIntensity
+     * Purpose:Validate intensity in addExerciseManually method
+     * Arguments:Scanner scanner
+     * return value: String
+     */
     private String getValidIntensity(Scanner scanner) {
         String intensity;
         List<String> validIntensities = List.of("Low", "Medium", "High", "Mixed");
@@ -230,6 +268,12 @@ private void goToProgressScreen() {
             }
         }
     }
+    /**
+     * Name: validateAndParseDate
+     * Purpose:Validate exercise date in addExerciseManually method
+     * Arguments:Scanner scanner
+     * return value: LocalDate
+     */
 
     private LocalDate validateAndParseDate(Scanner scanner) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -246,6 +290,12 @@ private void goToProgressScreen() {
             }
         }
     }
+    /**
+     * Name: validateAndParseTime
+     * Purpose:Validate exercise time in addExerciseManually method
+     * Arguments:Scanner scanner
+     * return value: LocalTime
+     */
 
     private LocalTime validateAndParseTime(Scanner scanner) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
@@ -263,29 +313,13 @@ private void goToProgressScreen() {
         }
     }
 
-    public float calculateCaloriesBurned(int duration, String intensity) {
-        float caloriesPerMinute = 0;
-        switch (intensity.toLowerCase()) {
-            case "low":
-                caloriesPerMinute = 5.0f;
-                break;
-            case "medium":
-                caloriesPerMinute = 8.0f;
-                break;
-            case "high":
-                caloriesPerMinute = 12.0f;
-                break;
-            case "mixed":
-                caloriesPerMinute = 10.0f;
-                break;
-        }
-        return caloriesPerMinute * duration;
-    }
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
-//----------------------------------------------------------------------------
  //now writing boolean methods to validate addFromTextFile
-
+    /**
+     * Name: isValidExerciseID
+     * Purpose: valid ID for addExerciseFromFile method
+     * Arguments:String exerciseID
+     * return value: boolean
+     */
   private boolean isValidExerciseID(String exerciseID) {
     // Check if the exercise ID matches the required pattern (e.g., E0000000)
     if (!exerciseID.matches("^E\\d{7}$")) {
@@ -302,15 +336,32 @@ private void goToProgressScreen() {
     // ID is valid and does not already exist
     return true;
 }
-
+    /**
+     * Name: isValidInt
+     * Purpose: validate duration for addExerciseFromFile method
+     * Arguments:int duration
+     * return value: boolean
+     */
     private boolean isValidInt(int duration) {
         return duration > 0;  // Duration must be positive
     }
+    /**
+     * Name: isValidIntensity
+     * Purpose: valid intensity for addExerciseFromFile method
+     * Arguments:String intensity
+     * return value: boolean
+     */
 
 private boolean isValidIntensity(String intensity) {
     List<String> validIntensities = List.of("Low", "Medium", "High", "Mixed");
     return validIntensities.contains(intensity);  // Check if intensity is valid
 }
+    /**
+     * Name: isValidDate
+     * Purpose: ensure valid date is entered for addExerciseFromFile method
+     * Arguments:String dateString
+     * return value: boolean
+     */
 private boolean isValidDate(String dateString) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     try {
@@ -321,7 +372,12 @@ private boolean isValidDate(String dateString) {
         return false;
     }
 }
-
+    /**
+     * Name: isValidTime
+     * Purpose: ensure valid time is entered for addExerciseFromFile method
+     * Arguments:String timeString
+     * return value: boolean
+     */
 private boolean isValidTime(String timeString) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
     try {
@@ -332,11 +388,16 @@ private boolean isValidTime(String timeString) {
         return false;
     }
 }
+    /**
+     * Name: addExerciseFromFile
+     * Purpose: enable user to add entries by uploading a textfile
+     * Arguments:Scanner scanner
+     * return value: List<ExerciseEntry>
+     */
 
-   public void addExerciseFromFile(Scanner scanner) {
+   public List<ExerciseEntry> addExerciseFromFile(Scanner scanner) {
         System.out.print("Enter the file name to load exercises: ");
         String fileName = scanner.nextLine();
-
 
 
        try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -384,10 +445,8 @@ private boolean isValidTime(String timeString) {
                     float calBurned = calculateCaloriesBurned(duration, intensity);
 
                     // Create and add ExerciseEntry to the list
-                    ExerciseEntry exerciseEntry = new ExerciseEntry(name, exerciseID, type, duration, intensity, date, time, calBurned);
+                    ExerciseEntry exerciseEntry = new ExerciseEntry(exerciseID, name, type, duration, intensity, date, time, calBurned);
                     exerciseList.add(exerciseEntry);
-
-
                 } else {
 
                     System.out.println("Skipping invalid line (incorrect number of fields): " + line);
@@ -397,9 +456,43 @@ private boolean isValidTime(String timeString) {
         } catch (IOException e) {
             System.out.println("Error reading file: " + e.getMessage());
         }
+       return exerciseList;
     }
 //--------------------------------------------------------------
     //-----------------------------------------------------------
+
+    /**
+     * Name: calculateCaloriesBurned
+     * Purpose: this method calculates the calories burned for an entry based on
+     *          duration and intensity. Low :5x, Medium: 8x, High: 12x, Mixed 10x
+     * Arguments:int duration, String intensity
+     * return value: float
+     */
+
+    public float calculateCaloriesBurned(int duration, String intensity) {
+        float caloriesPerMinute = 0;
+        switch (intensity.toLowerCase()) {
+            case "low":
+                caloriesPerMinute = 5.0f;
+                break;
+            case "medium":
+                caloriesPerMinute = 8.0f;
+                break;
+            case "high":
+                caloriesPerMinute = 12.0f;
+                break;
+            case "mixed":
+                caloriesPerMinute = 10.0f;
+                break;
+        }
+        return caloriesPerMinute * duration;
+    }
+    /**
+     * Name: removeExerciseEntry
+     * Purpose: Enable user to remove an entry successfully
+     * Arguments:Scanner scanner
+     * return value: boolean
+     */
 public boolean removeExerciseEntry(Scanner scanner) {
     System.out.print("Enter the Exercise ID to remove: ");
     String exerciseID = scanner.nextLine().trim();  // Ensure there's no leading/trailing whitespace
@@ -428,12 +521,21 @@ public boolean removeExerciseEntry(Scanner scanner) {
 
     return removed;
 }
+    /**
+     * Name: updateExerciseEntry
+     * Purpose: Enable user to update an entry successfully
+     * Arguments:Scanner scanner
+     * return value: ExerciseEntry
+     */
 
-
-    private boolean updateExerciseEntry(Scanner scanner) {
-        System.out.print("Enter the Exercise ID to update: ");
+    private ExerciseEntry updateExerciseEntry(Scanner scanner) {
+        System.out.print("Enter the Exercise ID to update:(e.g., E000000) ");
         String exerciseID = scanner.nextLine().trim();
 
+        if (exerciseID.isEmpty()) {
+            System.out.println("Food ID is invalid or empty. Update failed.");
+            return null;  // Return null if the ID is invalid
+        }
         Iterator<ExerciseEntry> iterator = exerciseList.iterator();
         ExerciseEntry exerciseToUpdate = null;
 
@@ -448,10 +550,15 @@ public boolean removeExerciseEntry(Scanner scanner) {
 
         if (exerciseToUpdate == null) {
             System.out.println("Exercise ID not found.");
-            return false;
+            return null;
         }
 
-        System.out.println("Exercise found. Which field would you like to update?");
+        System.out.println("Exercise found.");
+        System.out.println(exerciseToUpdate.getExerciseID()+ "-"+ exerciseToUpdate.getExerciseName() + "-"
+                           +exerciseToUpdate.getExerciseType() +"-" + exerciseToUpdate.getDuration() +"-"
+                           +exerciseToUpdate.getIntensity() + "-" + exerciseToUpdate.getExerciseDate() + "-"
+                            +  exerciseToUpdate.getExerciseTime());
+        System.out.println( " Which field would you like to update?");
         System.out.println("1. Name");
         System.out.println("2. Type");
         System.out.println("3. Duration");
@@ -459,21 +566,35 @@ public boolean removeExerciseEntry(Scanner scanner) {
         System.out.println("5. Date");
         System.out.println("6. Time"); // user will not be able to update calories burned because it will be recalculated automatically
         System.out.print("Enter your choice (1-6): ");
-        int choice = scanner.nextInt();
-        scanner.nextLine();  // Consume newline character after choice
+        int  updateChoice = -1;
+        boolean validChoice = false;
 
-        boolean isUpdated = false;
+        // Keep asking for a valid choice until the user enters a valid option
+        while (!validChoice) {
+            System.out.print("Enter your choice (1-7): ");
+            if (scanner.hasNextInt()) {
+                updateChoice = scanner.nextInt();
+                scanner.nextLine();  // Consume newline after choice
+                if (updateChoice >= 1 && updateChoice <= 7) {
+                    validChoice = true;  // Valid choice, break out of the loop
+                } else {
+                    System.out.println("Invalid option. Please enter a number between 1 and 7.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number between 1 and 7.");
+                scanner.nextLine();  // Consume invalid input
+            }
+        }
 
-        switch (choice) {
+        switch (updateChoice) {
             case 1:
                 System.out.print("Enter new name: ");
                 exerciseToUpdate.setExerciseName(scanner.nextLine());
-                isUpdated = true;
+
                 break;
             case 2:
                 System.out.print("Enter new type: ");
                 exerciseToUpdate.setExerciseType(scanner.nextLine());
-                isUpdated = true;
                 break;
             case 3:
                 int newDuration = getValidInt(scanner, "Enter new duration (in minutes): ");
@@ -490,34 +611,41 @@ public boolean removeExerciseEntry(Scanner scanner) {
             case 5:
                 System.out.print("Enter new date (MM/DD/YYYY): ");
                 exerciseToUpdate.setExerciseDate(validateAndParseDate(scanner));
-                isUpdated = true;
                 break;
             case 6:
                 System.out.print("Enter new time (hh:mm AM/PM): ");
                 exerciseToUpdate.setExerciseTime(validateAndParseTime(scanner));
-                isUpdated = true;
                 break;
             default:
                 System.out.println("Invalid option. Update failed.");
-                return false;
+                return null;
         }
-        if (isUpdated) {
-            System.out.println("Exercise entry updated successfully!");
-        }
-        exerciseList.add(exerciseToUpdate);
-        displayExerciseLog();
-        return isUpdated;
-    }
 
-    private void displayExerciseLog() {
+        System.out.println("Exercise entry updated successfully!");
+        displayExerciseLog();  // Show updated exercise log
+        return exerciseToUpdate;  // Return true to indicate success
+
+    }
+    /**
+     * Method Name: displayExerciseLog
+     * Purpose: This method generates and returns a formatted string representing the current exercise log.
+     * Arguments: None
+     * Return Value: void
+     */
+    private void displayExerciseLog() {  // Changed the return type to void for direct console output
+        StringBuilder logOutput = new StringBuilder();
+
         if (exerciseList.isEmpty()) {
-            System.out.println("No exercise entries available.");
+            logOutput.append("No exercise entries available.\n");
         } else {
-            System.out.println("Exercise Log:");
+            logOutput.append("Exercise Log:\n");
             for (ExerciseEntry exercise : exerciseList) {
-                System.out.println(exercise);  // Assuming `toString()` method is properly implemented in ExerciseEntry
+                logOutput.append(exercise).append("\n");  // Appending exercise entry to the log content
             }
         }
+
+        // Directly print the log content to the console
+        System.out.println(logOutput.toString());
     }
 
 

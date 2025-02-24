@@ -1,12 +1,25 @@
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
+/**
+ * Author: Dahnia Belizaire
+ * Course: CEN 3024C
+ * February 23, 2025
+ * Class Name: ExerciseEntry
+ * This class is responsible for representing an exercise entry in a exercise log application.
+ * Attributes: exercise ID, exercise name, exercise type, duration, intensity, time,date, calories burned.
+ * The class provides getter and setter methods to access and modify these attributes.
+ * and helps in managing exercise entries for users.
+ */
 
 
 public class ExerciseEntry {
-    private String exerciseName;
+
+
     private String exerciseID;
+    private String exerciseName;
     private String exerciseType;
     private int duration;
     private String intensity;
@@ -15,10 +28,10 @@ public class ExerciseEntry {
     private float calBurned;
 
     // Constructor
-    public ExerciseEntry(String exerciseName, String exerciseID, String exerciseType, int duration,
+    public ExerciseEntry(String exerciseID,String exerciseName, String exerciseType, int duration,
                          String intensity, LocalDate exerciseDate, LocalTime exerciseTime, float calBurned) {
-        this.exerciseName = exerciseName;
         this.exerciseID = exerciseID;
+        this.exerciseName = exerciseName;
         this.exerciseType = exerciseType;
         this.duration = duration;
         this.intensity = intensity;
@@ -28,6 +41,13 @@ public class ExerciseEntry {
     }
 
     // Getter and Setter methods
+    public String getExerciseID() {
+        return exerciseID;
+    }
+
+    public void setExerciseID(String exerciseID) {
+        this.exerciseID = exerciseID;
+    }
     public String getExerciseName() {
         return exerciseName;
     }
@@ -36,13 +56,6 @@ public class ExerciseEntry {
         this.exerciseName = exerciseName;
     }
 
-    public String getExerciseID() {
-        return exerciseID;
-    }
-
-    public void setExerciseID(String exerciseID) {
-        this.exerciseID = exerciseID;
-    }
 
     public String getExerciseType() {
         return exerciseType;

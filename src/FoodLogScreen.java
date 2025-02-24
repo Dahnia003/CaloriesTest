@@ -8,6 +8,18 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Scanner;
+/**
+ *Dahnia Belizaire
+ *CEN 3024C- Software Developement 1
+ * February 23, 2025
+ * Name: FoodLogScreen
+ * This class represents a food item/meal logging system where users can:
+ * 1. Add food entries manually or from a file.
+ * 2. Remove or update a food entry.
+ * 3. Display all food entries.
+ * 4. Navigate to the exercise screen or stay on the food screen after a command.
+ *  The objective of this class is to track user food items/ meals and manage the food log.
+ */
 
 public class FoodLogScreen {
 
@@ -17,11 +29,24 @@ public class FoodLogScreen {
     public List<FoodEntry> getFoodEntries() {
         return foodList;
     }
-
+    /**
+     * Method Name: main
+     * Purpose: This is the entry point of the class.
+     *           It initializes `FoodLogScreen` object and calls
+     *           the run` method to display the options for the user.
+     * Arguments: String[] args
+     * Return Value: void
+     */
     public static void main(String[] args) {
         FoodLogScreen foodLogScreen = new FoodLogScreen();
         foodLogScreen.run();
     }
+    /**
+     * Method Name: run
+     * Purpose: Display food menu with different options
+     * Arguments: None
+     * Return Value: void
+     */
 
     public void run() {
         Scanner scanner = new Scanner(System.in);
@@ -76,6 +101,12 @@ public class FoodLogScreen {
             }
         }
     }
+    /**
+     * Name: userChoice
+     * Purpose:Ask user how they want to proceed after fod entry manipulation
+     * Arguments:None
+     * return value: void
+     */
     private void userChoice() {
         Scanner scanner = new Scanner(System.in);
 
@@ -101,14 +132,22 @@ public class FoodLogScreen {
             }
         }
     }
+    /**
+     * Name: goToExerciseScreen
+     * Purpose:Allow user to stay on current screen or navigate to exercise screen
+     * Arguments:None
+     * return value: void
+     */
 
     private void goToExerciseScreen() {
         ExerciseLogScreen exerciseLogScreen = new ExerciseLogScreen();
         exerciseLogScreen.run2();
     }
     /**
-     * Prompts the user to enter food information manually.
-     * Displays a form for input.
+     * Name: enterFoodManually
+     * Purpose:Add a food entry manually
+     * Arguments:Scanner scanner
+     * return value: List<FoodEntry>
      */
     private FoodEntry enterFoodManually(Scanner scanner) {
         System.out.print("Enter a Food ID F0000000 (alphanumeric, 7 characters long with the prefix F): ");
@@ -143,6 +182,12 @@ public class FoodLogScreen {
         System.out.println("Food entry added successfully!");
     return foodEntry;
     }
+    /**
+     * Name: getValidFoodID
+     * Purpose:Validate food ID in enterFoodManually method
+     * Arguments:Scanner scanner
+     * return value: String
+     */
 
     private String getValidFoodID(Scanner scanner) {
         String foodID;
@@ -152,13 +197,34 @@ public class FoodLogScreen {
                 System.out.println("Food ID cannot be empty.");
                 continue;
             }
-            if (foodID.matches("^F\\d{7}")) {
-                return foodID;
-            } else {
-                System.out.println("Invalid ID! Please enter an alphanumeric ID with exactly 7 characters.");
+            if (!foodID.matches("^F\\d{7}")) {
+                System.out.println("Invalid ID! Please enter an alphanumeric ID with exactly 7 digits (starting with 'F').");
+                continue;
             }
+
+            // Check if the food ID already exists in the usedFoodIDs set
+            boolean idExists = false;
+            for (FoodEntry food : foodList) {
+                if (food.getFoodID().equals(foodID)) {
+                    idExists = true;
+                    break;
+                }
+            }
+
+            if (idExists) {
+                System.out.println("Food ID already exists. Please enter a unique Food ID.");
+                continue;
+            }
+            FoodEntry.usedFoodIDs.add(foodID);
+            return foodID;
         }
     }
+    /**
+     * Name: getValidFloat
+     * Purpose:Validate calories, carbs, protein, and fat are float values
+     * Arguments:Scanner scanner, String prompt
+     * return value: float
+     */
 
     private float getValidFloat(Scanner scanner, String prompt) {
         while (true) {
@@ -176,7 +242,13 @@ public class FoodLogScreen {
             }
         }
     }
-
+    /**
+     * Name: getValidMealType
+     * Purpose:Validate meal type in enterFoodManually method
+     *         breakfast, Lunch, Dinner, Snack, Other
+     * Arguments:Scanner scanner
+     * return value: String
+     */
 
 
     private String getValidMealType(Scanner scanner) {
@@ -196,6 +268,12 @@ public class FoodLogScreen {
             }
         }
     }
+    /**
+     * Name: validateAndParseDate
+     * Purpose:Validate date for enterFoodManually
+     * Arguments:Scanner scanner
+     * return value: LocalDate
+     */
 
     private LocalDate validateAndParseDate(Scanner scanner) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -213,9 +291,13 @@ public class FoodLogScreen {
         }
     }
 //---------------------------------------------
-
-
    // now will create validation methods for addFoodFromFile
+    /**
+     * Name: isValidFoodID
+     * Purpose:Validate ID for addFoodFromFile
+     * Arguments:String foodID
+     * return value: boolean
+     */
 
     private boolean isValidFoodID(String foodID) {
         // Check if the exercise ID matches the required pattern (e.g., E0000000)
@@ -234,15 +316,35 @@ public class FoodLogScreen {
         return true;
     }
 
-    private boolean isValidFloat(float carbs) {
-        return carbs> 0;
+
+    /**
+     * Name: isValidFloat
+     * Purpose:Validate values are float for carbs, fat, protein, calories
+     * Arguments:float input
+     * return value: boolean
+     */
+    private boolean isValidFloat(float input) {
+
+        return input> 0;
     }
+
+    /**
+     * Name: isValidMealType
+     * Purpose:Validate proper entries of meal type in addFoodFromFile
+     * Arguments:String mealType
+     * return value: boolean
+     */
 
     private boolean isValidMealType(String mealType) {
         List<String> validMealTypes = List.of("Breakfast", "Lunch", "Dinner", "Snack", "Other");
         return validMealTypes.contains(mealType);
     }
-
+    /**
+     * Name: isValidDate
+     * Purpose:Validate date format
+     * Arguments:String dateString
+     * return value: boolean
+     */
     private boolean isValidDate(String dateString) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
         try {
@@ -254,9 +356,14 @@ public class FoodLogScreen {
         }
     }
 
-
-    private void addFoodFromFile(Scanner scanner) {
-        System.out.print("Enter the file name to load exercises: ");
+    /**
+     * Name: addFoodFromFile
+     * Purpose: Enable user to add food entry from loading a file
+     * Arguments:Scanner scanner
+     * return value: List<FoodEntry>
+     */
+    private List<FoodEntry> addFoodFromFile(Scanner scanner) {
+        System.out.print("Enter the file name to load food entries: ");
         String fileName = scanner.nextLine();
 
         try (BufferedReader br = new BufferedReader(new FileReader(fileName))) {
@@ -301,7 +408,6 @@ public class FoodLogScreen {
                         // Create and add ExerciseEntry to the list
                         FoodEntry foodEntry = new FoodEntry(foodID, foodName, calories, carbs, protein, fat, mealType, date);
                         foodList.add(foodEntry);
-                        System.out.println("Food log(s) added successfully!");
                     } else {
                         System.out.println("Skipping invalid line (incorrect number of fields): " + line);
                     }
@@ -310,11 +416,17 @@ public class FoodLogScreen {
         }catch (IOException e) {
                 System.out.println("Error reading file: " + e.getMessage());
             }
+        return foodList;
         }
 
+    /**
+     * Name: removeFoodEntry
+     * Purpose: Enable user to remove food entry
+     * Arguments:Scanner scanner
+     * return value: boolean
+     */
 
-
-    private void removeFoodEntry(Scanner scanner) {
+    private boolean removeFoodEntry(Scanner scanner) {
         System.out.print("Enter the Food ID to remove: ");
         String foodID = scanner.nextLine().trim();
 
@@ -330,26 +442,41 @@ public class FoodLogScreen {
                 break;  // Exit the loop once the food entry is removed
             }
         }
-
         if (removed) {
             System.out.println("Food entry removed successfully.");
         } else {
             System.out.println("Food ID not found.");
         }
+        return removed;
     }
+    /**
+     * Name: displayFoodLog
+     * Purpose: Enable user to display all food entries
+     * Arguments:None
+     * return value: String
+     */
+    private void displayFoodLog() {  // Changed the return type to void for direct console output
+        StringBuilder logContent = new StringBuilder();
 
-    private void displayFoodLog() {
         if (foodList.isEmpty()) {
-            System.out.println("No food entries available.");
+            logContent.append("No food entries available.\n");
         } else {
-            System.out.println("Food Log:");
+            logContent.append("Food Log:\n");
             for (FoodEntry food : foodList) {
-                System.out.println(food);
+                logContent.append(food).append("\n");  // Appending food entry to the log content
             }
         }
+
+        // Directly print the log content to the console
+        System.out.println(logContent.toString());
     }
 
-
+    /**
+     * Name: updateFoodEntry
+     * Purpose: Enable user to update a food entry
+     * Arguments:Scanner scanner
+     * return value: FoodEntry
+     */
     private FoodEntry updateFoodEntry(Scanner scanner) {
         System.out.print("Enter the Food ID to update (e.g., F000000): ");
         String foodID = scanner.nextLine().trim();
@@ -397,8 +524,26 @@ public class FoodLogScreen {
         System.out.println("6. Meal Type");
         System.out.println("7. Date");
         System.out.print("Enter your choice (1-7): ");
-        int updateChoice = scanner.nextInt();
-        scanner.nextLine();  // Consume newline after choice
+
+        int  updateChoice = -1;
+        boolean validChoice = false;
+
+        // Keep asking for a valid choice until the user enters a valid option
+        while (!validChoice) {
+            System.out.print("Enter your choice (1-7): ");
+            if (scanner.hasNextInt()) {
+                updateChoice = scanner.nextInt();
+                scanner.nextLine();  // Consume newline after choice
+                if (updateChoice >= 1 && updateChoice <= 7) {
+                    validChoice = true;  // Valid choice, break out of the loop
+                } else {
+                    System.out.println("Invalid option. Please enter a number between 1 and 7.");
+                }
+            } else {
+                System.out.println("Invalid input. Please enter a number between 1 and 7.");
+                scanner.nextLine();  // Consume invalid input
+            }
+        }  // Consume newline after choice
 
         switch (updateChoice) {
             case 1:
@@ -438,10 +583,9 @@ public class FoodLogScreen {
         }
 
         System.out.println("Food entry updated successfully!");
+        displayFoodLog();
         return foodToUpdate;  // Return the updated food entry
     }
-
-
 
 
 }

@@ -2,7 +2,16 @@ import java.util.HashSet;
 import java.util.Set;
 import java.time.LocalDate;
 
-
+/**
+ * Author: Dahnia Belizaire
+ * Course: CEN 3024C
+ * February 23, 2025
+ * Class Name: FoodEntry
+ * This class is responsible for representing a food entry in a food log application.
+ * Attributes: food ID, food name, calories, carbs, protein, fat, meal type,date.
+ * The class provides getter and setter methods to access and modify these attributes.
+ * and helps in managing food entries for users.
+ */
 public class FoodEntry {
     public static final Set<String> usedFoodIDs = new HashSet<>();
     public String foodID;
